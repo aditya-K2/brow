@@ -30,7 +30,8 @@ var (
 	fieldSepartor = "|"
 	subsystem     = "history"
 	query         = []string{"*"}
-	filePath      = "/home/aditya/.config/BraveSoftware/Brave-Browser/Default/History"
+	configDir, _  = os.UserConfigDir()
+	filePath      = configDir + "/BraveSoftware/Brave-Browser/Default/History"
 )
 
 func GetArgs() (f, s, p string, q []string) {
@@ -96,5 +97,5 @@ func GetArgs() (f, s, p string, q []string) {
 
 func main() {
 	fieldSepartor, subsystem, filePath, query = GetArgs()
-	fmt.Println(fieldSepartor, subsystem, query)
+	fmt.Println(fieldSepartor, subsystem, filePath, query)
 }
