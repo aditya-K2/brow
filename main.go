@@ -54,9 +54,7 @@ func GetArgs() (f, s, p string, q []string) {
 				if os.Args[k] == "-s" {
 					if IsShortForm(os.Args[k+1], "downloads") {
 						s = "downloads"
-					} else if IsShortForm(os.Args[k+1], "history") {
-						s = "history"
-					} else {
+					} else if !IsShortForm(os.Args[k+1], "history") {
 						PrintC("RED", fmt.Sprintf("No Subystem with Name %s Found", os.Args[k+1])+"\n")
 						os.Exit(-1)
 					}
