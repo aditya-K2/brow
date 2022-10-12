@@ -1,6 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
+)
 
 var (
 	COLORS map[string]string = map[string]string{
@@ -20,10 +26,26 @@ func PrintC(color, text string) {
 	fmt.Print(COLORS[color] + text + COLORS["RESET"])
 }
 
-func IsShortForm(s string, o string) bool {
-	if len(s) == 0 || (len(s) > len(o)) {
-		return false
+func Copy(src, destination string) error {
+	source, err := ioutil.ReadFile(src)
+	if err != nil {
+		return err
 	} else {
-		return s == o[:len(s)]
+		err = ioutil.WriteFile(destination, source, 0644)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+}
+
+func ExpandHomeDir(path string) string {
+	HOME_DIR, _ := os.UserHomeDir()
+	if strings.HasPrefix(path, "~/") {
+		return filepath.Join(HOME_DIR, path[1:])
+	} else if path == "~" {
+		return HOME_DIR
+	} else {
+		return path
 	}
 }

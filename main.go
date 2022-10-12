@@ -1,99 +1,75 @@
 package main
 
 import (
+	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"strings"
 )
 
-var (
-	HelpInfo = `
-	brow -s [d(ownloads)/h(istory)] -q [query] -f [field separator] -p [path] -h -a
+type Query struct {
+	Arr []interface{}
+}
 
-	-s		Specify Subsystem. Defaults to history.
+func NewQuery(q []interface{}) *Query {
+	return &Query{
+		q,
+	}
+}
 
-	-h		Help
+func (q *Query) String() string { return fmt.Sprint(q.Arr) }
 
-	-f		Specify the Field Separator which will be used in the Output, defaults to '|'
-
-	-q		Query for the given substring
-
-	-a		See All Available Options that can be used to query the Subsystem.
-
-	-p		Specify Custom Path for History
-
-	Note:
-			The Letters in () are optional
-			for e.g :
-			history, h, his all will be considered history
-	`
-	fieldSepartor = "|"
-	subsystem     = "history"
-	query         = []string{"*"}
-	configDir, _  = os.UserConfigDir()
-	filePath      = configDir + "/BraveSoftware/Brave-Browser/Default/History"
-)
-
-func GetArgs() (f, s, p string, q []string) {
-	f = fieldSepartor
-	s = subsystem
-	q = query
-	p = filePath
-	if len(os.Args) == 1 {
-		PrintC("RED", "No Arguments Provided!\n")
-		PrintC("GREEN", "Usage: ")
-		fmt.Println(HelpInfo)
-	} else {
-		if os.Args[1] == "-h" {
-			PrintC("GREEN", "Usage: ")
-			fmt.Println(HelpInfo)
-			os.Exit(0)
-		}
-		for k := range os.Args {
-			if k != len(os.Args)-1 {
-				if os.Args[k] == "-s" {
-					if IsShortForm(os.Args[k+1], "downloads") {
-						s = "downloads"
-					} else if !IsShortForm(os.Args[k+1], "history") {
-						PrintC("RED", fmt.Sprintf("No Subystem with Name %s Found", os.Args[k+1])+"\n")
-						os.Exit(-1)
-					}
-					k++
-					continue
-				} else if os.Args[k] == "-f" {
-					f = os.Args[k+1]
-					k++
-					continue
-				} else if os.Args[k] == "-q" {
-					if (os.Args[k+1]) == "" || len(os.Args) == 2 {
-						PrintC("RED", "Query Format Wrong\n")
-						os.Exit(-1)
-					} else {
-						q = make([]string, 0)
-						for _, s := range strings.Split(os.Args[k+1], ",") {
-							q = append(q, strings.TrimSpace(s))
-						}
-					}
-				} else if os.Args[k] == "-p" {
-					if (os.Args[k+1]) == "" || len(os.Args) == 2 {
-						PrintC("RED", "No Path for History Provided upon using -p flag\n")
-						os.Exit(-1)
-					} else {
-						p = os.Args[k+1]
-					}
-				} else {
-					if k != 0 {
-						PrintC("RED", fmt.Sprintf("%s : No Such Flag Exists\n", os.Args[k]))
-						os.Exit(-1)
-					}
-				}
-			}
+func (q *Query) Set(value string) error {
+	q.Arr = make([]interface{}, 0)
+	if value == "" || strings.ReplaceAll(value, ",", "") == "" {
+		return errors.New("Empty Query!")
+	}
+	for _, s := range strings.Split(value, ",") {
+		_s := strings.TrimSpace(s)
+		if _s != "" {
+			q.Arr = append(q.Arr, _s)
 		}
 	}
-	return f, s, p, q
+	return nil
+}
+
+var (
+	fieldSepartor        = "|"
+	subsystem            = "urls" // History
+	query                = NewQuery([]interface{}{"*"})
+	configDir, configErr = os.UserConfigDir()
+	rhpath               = "/BraveSoftware/Brave-Browser/Default/History"
+	path                 = configDir + rhpath
+	update               = false
+	seeAvailableOptions  = false
+)
+
+func ParseFlags() {
+	flag.StringVar(&subsystem, "s", subsystem, "Specify Subsystem. Either h[istory]/d[ownloads]")
+	flag.StringVar(&fieldSepartor, "f", fieldSepartor, "Specify the Field Separator which will be used in the Output.")
+	flag.Var(query, "q", "Query for the current Subsystem")
+	flag.BoolVar(&update, "u", update, "Update the Current Database")
+	flag.BoolVar(&seeAvailableOptions, "a", seeAvailableOptions, "See All Available Options that can be used to query the Subsystem.")
+	flag.StringVar(&path, "p", path, "Specify Custom Path for History")
+	flag.Parse()
 }
 
 func main() {
-	fieldSepartor, subsystem, filePath, query = GetArgs()
-	fmt.Println(fieldSepartor, subsystem, filePath, query)
+	ParseFlags()
+	if configErr != nil && path == rhpath {
+		PrintC("RED", "Couldn't Get user's Config Directory!\n")
+		panic(configErr)
+	}
+	if subsystem == "history" {
+		subsystem = "urls"
+	} else if subsystem != "downloads" && subsystem != "urls" {
+		PrintC("RED", fmt.Sprintf("No Subystem with Name %s Found", subsystem)+"\n")
+		os.Exit(-1)
+	}
+	ConnectDatabase()
+	if seeAvailableOptions {
+		GetSubsytemInfo()
+		os.Exit(0)
+	}
 }
