@@ -9,10 +9,10 @@ import (
 )
 
 type Query struct {
-	Arr []interface{}
+	Arr []string
 }
 
-func NewQuery(q []interface{}) *Query {
+func NewQuery(q []string) *Query {
 	return &Query{
 		q,
 	}
@@ -21,7 +21,7 @@ func NewQuery(q []interface{}) *Query {
 func (q *Query) String() string { return fmt.Sprint(q.Arr) }
 
 func (q *Query) Set(value string) error {
-	q.Arr = make([]interface{}, 0)
+	q.Arr = make([]string, 0)
 	if value == "" || strings.ReplaceAll(value, ",", "") == "" {
 		return errors.New("Empty Query!")
 	}
@@ -37,21 +37,28 @@ func (q *Query) Set(value string) error {
 var (
 	fieldSepartor        = "|"
 	subsystem            = "urls" // History
-	query                = NewQuery([]interface{}{"*"})
+	query                = NewQuery([]string{"*"})
 	configDir, configErr = os.UserConfigDir()
 	rhpath               = "/BraveSoftware/Brave-Browser/Default/History"
-	path                 = configDir + rhpath
+	opath                = configDir + rhpath
+	cacheDir, cacheErr   = os.UserCacheDir()
+	path                 = opath
+	cachedPath           = cacheDir + "/BrowHistory"
 	update               = false
 	seeAvailableOptions  = false
+	numberOfResults      = -1
+	ascending            = false
 )
 
 func ParseFlags() {
-	flag.StringVar(&subsystem, "s", subsystem, "Specify Subsystem. Either h[istory]/d[ownloads]")
+	flag.StringVar(&subsystem, "s", subsystem, "Specify Subsystem. Either history/downloads")
 	flag.StringVar(&fieldSepartor, "f", fieldSepartor, "Specify the Field Separator which will be used in the Output.")
 	flag.Var(query, "q", "Query for the current Subsystem")
 	flag.BoolVar(&update, "u", update, "Update the Current Database")
 	flag.BoolVar(&seeAvailableOptions, "a", seeAvailableOptions, "See All Available Options that can be used to query the Subsystem.")
 	flag.StringVar(&path, "p", path, "Specify Custom Path for History")
+	flag.IntVar(&numberOfResults, "n", numberOfResults, "Specify Number of Results to be Displayed")
+	flag.BoolVar(&ascending, "ascending", ascending, "Get Results in ascending order. Default is Descending Order")
 	flag.Parse()
 }
 
@@ -61,6 +68,18 @@ func main() {
 		PrintC("RED", "Couldn't Get user's Config Directory!\n")
 		panic(configErr)
 	}
+	if cacheErr != nil && path == opath {
+		PrintC("RED", "Couldn't Get user's Cache Directory!\n")
+		panic(cacheErr)
+	}
+	if update && path == opath {
+		if err := Copy(path, cachedPath); err != nil {
+			PrintC("RED", fmt.Sprintf("Error Copying Database from %s to %s", path, cachedPath))
+			panic(err)
+		} else {
+			path = cachedPath
+		}
+	}
 	if subsystem == "history" {
 		subsystem = "urls"
 	} else if subsystem != "downloads" && subsystem != "urls" {
@@ -69,7 +88,13 @@ func main() {
 	}
 	ConnectDatabase()
 	if seeAvailableOptions {
-		GetSubsytemInfo()
+		for k := range GetSubsytemInfo() {
+			fmt.Println(k)
+		}
 		os.Exit(0)
+	}
+	fmt.Println(ascending)
+	for _, v := range GetData() {
+		fmt.Println(v)
 	}
 }
