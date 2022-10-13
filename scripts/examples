@@ -1,0 +1,9 @@
+#!/bin/bash
+
+fzf_bh() {
+    brow -q "title,url" -c | fzf --height 10 | awk -F '|' '{print $2}' | xargs -r -d '\n' brave
+}
+
+dmenu_bh() {
+    brow -q "title,url" -c | dmenu -i -F -l 10  | awk -F '|' '{print $2}' | xargs -r -d '\n' brave
+}

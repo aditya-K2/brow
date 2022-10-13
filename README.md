@@ -22,3 +22,4 @@ Get Browser History in terminal.
 ```
 
 - Tested on Brave (Should Work for Most of the Chromium based Browsers)
+- Check the [scripts](https://github.com/aditya-K2/gomp/blob/master/scripts/examples) for examples to use it in a script
