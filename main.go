@@ -51,7 +51,7 @@ var (
 )
 
 func ParseFlags() {
-	flag.StringVar(&subsystem, "s", subsystem, "Specify Subsystem. Either history/downloads")
+	flag.StringVar(&subsystem, "s", subsystem, "Specify Subsystem. Either history(urls)/downloads")
 	flag.StringVar(&fieldSepartor, "f", fieldSepartor, "Specify the Field Separator which will be used in the Output.")
 	flag.Var(query, "q", "Query for the current Subsystem")
 	flag.BoolVar(&update, "u", update, "Update the Current Database")
@@ -93,7 +93,6 @@ func main() {
 		}
 		os.Exit(0)
 	}
-	fmt.Println(ascending)
 	for _, v := range GetData() {
 		fmt.Println(v)
 	}
