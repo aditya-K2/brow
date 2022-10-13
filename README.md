@@ -8,6 +8,7 @@ Get Browser History in terminal.
   -a    See All Available Options that can be used to query the Subsystem.
   -ascending
         Get Results in ascending order. Default is Descending Order
+  -c    Copy the Browser Database. Ignored if path is provided. Use this Flag in case Browser is Open as it locks the database.
   -f string
         Specify the Field Separator which will be used in the Output. (default "|")
   -n int
@@ -18,5 +19,6 @@ Get Browser History in terminal.
         Query for the current Subsystem (default [*])
   -s string
         Specify Subsystem. Either history(urls)/downloads (default "urls")
-  -u    Update the Current Database
 ```
+
+- Tested on Brave (Should Work for Most of the Chromium based Browsers)

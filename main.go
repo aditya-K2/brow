@@ -44,7 +44,7 @@ var (
 	cacheDir, cacheErr   = os.UserCacheDir()
 	path                 = opath
 	cachedPath           = cacheDir + "/BrowHistory"
-	update               = false
+	copy                 = false
 	seeAvailableOptions  = false
 	numberOfResults      = -1
 	ascending            = false
@@ -54,7 +54,7 @@ func ParseFlags() {
 	flag.StringVar(&subsystem, "s", subsystem, "Specify Subsystem. Either history(urls)/downloads")
 	flag.StringVar(&fieldSepartor, "f", fieldSepartor, "Specify the Field Separator which will be used in the Output.")
 	flag.Var(query, "q", "Query for the current Subsystem")
-	flag.BoolVar(&update, "u", update, "Update the Current Database")
+	flag.BoolVar(&copy, "c", copy, "Copy the Browser Database. Ignored if path is provided. Use this Flag in case Browser is Open as it locks the database.")
 	flag.BoolVar(&seeAvailableOptions, "a", seeAvailableOptions, "See All Available Options that can be used to query the Subsystem.")
 	flag.StringVar(&path, "p", path, "Specify Custom Path for History")
 	flag.IntVar(&numberOfResults, "n", numberOfResults, "Specify Number of Results to be Displayed")
@@ -72,7 +72,7 @@ func main() {
 		PrintC("RED", "Couldn't Get user's Cache Directory!\n")
 		panic(cacheErr)
 	}
-	if update && path == opath {
+	if copy && path == opath {
 		if err := Copy(path, cachedPath); err != nil {
 			PrintC("RED", fmt.Sprintf("Error Copying Database from %s to %s", path, cachedPath))
 			panic(err)
