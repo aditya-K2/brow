@@ -2,6 +2,12 @@
 
 Get Browser History in terminal.
 
+## Building
+
+```sh
+git clone "https://github.com/aditya-K2/brow" && cd brow && CGO_ENABLED=1 GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw" go build -v
+```
+
 ## Usage
 
 ```
@@ -34,7 +40,6 @@ https://user-images.githubusercontent.com/51816057/195517488-6db734ca-7943-47c6-
 
 https://user-images.githubusercontent.com/51816057/195517545-33186539-c55a-4134-8d95-71ab0497b9af.mp4
 
+#### Note
 
-
-
-
+When the browser is opened the database is locked. Use -c flag to search the copy of the database.
