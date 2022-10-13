@@ -28,11 +28,12 @@ Get Browser History in terminal.
 
 ### dmenu
 
-https://user-images.githubusercontent.com/51816057/195516995-2ea2150f-4cd3-48ca-8c5a-824f4fbd667a.mp4
+https://user-images.githubusercontent.com/51816057/195517488-6db734ca-7943-47c6-aac5-f0315c7f765f.mp4
 
 ### fzf
 
-https://user-images.githubusercontent.com/51816057/195517079-fa81cb12-8957-4ea1-8666-85c454920c5b.mp4
+https://user-images.githubusercontent.com/51816057/195517545-33186539-c55a-4134-8d95-71ab0497b9af.mp4
+
 
 
 
