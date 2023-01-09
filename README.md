@@ -5,7 +5,7 @@ Get Browser History in terminal.
 ## Building
 
 ```sh
-git clone "https://github.com/aditya-K2/brow" && cd brow && CGO_ENABLED=1 GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw" go build -v
+git clone "https://github.com/aditya-K2/brow" && cd brow && CGO_ENABLED=1 GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw" go build -v && sudo install -D brow -t "/usr/bin/"
 ```
 
 ## Usage
