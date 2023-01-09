@@ -1,9 +1,13 @@
 #!/bin/bash
 
 fzf_bh() {
-    brow -q "title,url" -c | fzf --height 10 | awk -F '|' '{print $2}' | xargs -r -d '\n' brave
+    __sel="$(brow -q "title,url" -c | fzf)"
+    [[ "$__sel" =~ http.*$ ]] && echo "$BASH_REMATCH" | xargs -r -d '\n' brave
 }
 
 dmenu_bh() {
-    brow -q "title,url" -c | dmenu -i -F -l 10  | awk -F '|' '{print $2}' | xargs -r -d '\n' brave
+    # for zsh:
+    # setopt local_options BASH_REMATCH
+    __sel="$(brow -q "title,url" -c | dmenu -i -f -l 10)"
+    [[ "$__sel" =~ http.*$ ]] && echo "$BASH_REMATCH" | xargs -r -d '\n' brave
 }
